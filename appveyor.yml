@@ -47,7 +47,7 @@ build_script:
   #Delete scratch org
   - sfdx force:org:delete --targetusername ciorg --noprompt
 
-test:
+test_script:
    #Decrypt server key
   - openssl enc -nosalt -aes-256-cbc -d -in SampleSalesforce/cert_asset/server.key.enc -out SampleSalesforce/cert_asset/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
   #Authorize Dev Hub
