@@ -34,7 +34,7 @@ install:
 
 build_script:
   #Decrypt server key
-  - openssl enc -nosalt -aes-256-cbc -d -in cert_asset/server.key.enc -out cert_asset/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
+  - openssl enc -nosalt -aes-256-cbc -d -in SampleSalesforce/cert_asset/server.key.enc -out SampleSalesforce/cert_asset/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
   #Authorize Dev Hub
   - sfdx force:auth:jwt:grant --clientid $HUB_CONSUMER_KEY --jwtkeyfile assets/server.key --username $HUB_USER_NAME --setdefaultdevhubusername --setalias HubOrg
   #Create scratch org
@@ -46,17 +46,5 @@ build_script:
   - sfdx force:apex:test:run --targetusername ciorg --wait 10 --resultformat tap --codecoverage --testlevel $TESTLEVEL
   #Delete scratch org
   - sfdx force:org:delete --targetusername ciorg --noprompt
-  #Create package version
-  - PACKAGEVERSION="$(sfdx force:package:version:create --package $PACKAGENAME --installationkeybypass --wait 10 --json --targetdevhubusername HubOrg | jq '.result.SubscriberPackageVersionId' | tr -d '"')"
-  - echo "Package Version Id - "${PACKAGEVERSION}
-  - echo "Waiting for 5 minutes for package replication"
-  - sleep 5m
-  #Create scratch org
-  - sfdx force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile config/project-scratch-def.json --setalias installorg --wait 10 --durationdays 1
-  - sfdx force:org:display --targetusername installorg
-  #Install package in scratch org
-  - sfdx force:package:install --package $PACKAGEVERSION --wait 10 --targetusername installorg
-  #Run unit tests on scratch org
-  - sfdx force:apex:test:run --targetusername installorg --wait 10 --resultformat tap --codecoverage --testlevel $TESTLEVEL
-  #Delete scratch org
-  - sfdx force:org:delete --targetusername installorg --noprompt
+  
+ 
