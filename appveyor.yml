@@ -46,5 +46,18 @@ build_script:
   - sfdx force:apex:test:run --targetusername ciorg --wait 10 --resultformat tap --codecoverage --testlevel $TESTLEVEL
   #Delete scratch org
   - sfdx force:org:delete --targetusername ciorg --noprompt
+
+test:
+   #Decrypt server key
+  - openssl enc -nosalt -aes-256-cbc -d -in SampleSalesforce/cert_asset/server.key.enc -out SampleSalesforce/cert_asset/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
+  #Authorize Dev Hub
+  - sfdx force:auth:jwt:grant --clientid $HUB_CONSUMER_KEY --jwtkeyfile SampleSalesforce/cert_asset/server.key --username $HUB_USER_NAME --setdefaultdevhubusername --setalias HubOrg
+  #Create scratch org
+  - sfdx force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile SampleSalesforce/config/project-scratch-def.json --setalias ciorg --wait 10 --durationdays 1
+  - sfdx force:org:display --targetusername ciorg
+   #Delete scratch org
+  - sfdx force:org:delete --targetusername ciorg --noprompt
+
+  
   
  
